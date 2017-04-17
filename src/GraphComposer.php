@@ -55,7 +55,7 @@ class GraphComposer
     }
 
     /**
-     * @param array $separateGraphPackagesNames 
+     * @param array $separateGraphPackagesNames
      * @param array $separateGraphVendorNames
      *
      * @return Graph[]
@@ -70,13 +70,13 @@ class GraphComposer
             }
 
             return [$graph];
-        }   
+        }
 
         $graphes = [];
 
         foreach ($this->dependencyGraph->getPackages() as $package) {
             $packageFullName = $package->getName();
-            
+
             if (in_array($packageFullName, $separateGraphPackagesNames)) {
                 if(!isset($graphes[$packageFullName])) {
                     $graphes[$packageFullName] = new Graph;
@@ -121,7 +121,7 @@ class GraphComposer
                 $this->setLayout($edge, $this->layoutEdgeDev);
             }
         }
-        
+
         $root = $graph->getVertex($this->dependencyGraph->getRootPackage()->getName());
         $this->setLayout($root, $this->layoutVertexRoot);
     }

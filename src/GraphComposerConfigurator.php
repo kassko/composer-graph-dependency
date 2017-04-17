@@ -1,8 +1,8 @@
 <?php
 
-namespace Kassko\Composer\GraphDependency\Graph;
+namespace Kassko\Composer\GraphDependency;
 
-use Kassko\Composer\DependencyAnalyzer;
+use Kassko\Composer\GraphDependency\DependencyAnalyzer;
 use Kassko\Composer\GraphDependency\PackageFilter;
 
 class GraphComposerConfigurator

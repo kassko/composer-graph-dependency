@@ -2,12 +2,13 @@
 
 namespace Kassko\Composer\GraphDependency\Command;
 
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
+use Kassko\Composer\GraphDependency\GraphComposer;
+use Kassko\Composer\GraphDependency\GraphComposerConfigurator;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Kassko\Composer\GraphDependency\Graph\GraphComposer;
 
 class Export extends Command
 {
@@ -51,13 +52,13 @@ class Export extends Command
         ];
 
         $graph = new GraphComposer();
-        $dgc = DependencyGraphConfigurator($input->getArgument('dir'), new PackageFilter($filterConfig), new DependencyAnalyzer);
+        $dgc = GraphComposerConfigurator($input->getArgument('dir'), new PackageFilter($filterConfig), new DependencyAnalyzer);
         $dgc->configure($graph);
 
         $target = $input->getArgument('output');
         if ($target !== null) {
             if (is_dir($target)) {
-                $target = rtrim($target, '/') . '/graph-composer.svg';
+                $target = rtrim($target, '/') . '/composer-dependency.svg';
             }
 
             $filename = basename($target);

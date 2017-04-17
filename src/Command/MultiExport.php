@@ -2,13 +2,13 @@
 
 namespace Kassko\Composer\GraphDependency\Command;
 
-use Clue\GraphComposer\Graph\GraphComposer;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
+use Kassko\Composer\GraphDependency\GraphComposer;
+use Kassko\Composer\GraphDependency\GraphComposerConfigurator;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use RuntimeException;
 
 class MultiExport extends Command
 {
@@ -17,7 +17,7 @@ class MultiExport extends Command
         $this->setName('export')
              ->setDescription('Export dependency graph images for given project directory and given packages or vendors')
              ->addArgument('dir', InputArgument::OPTIONAL, 'Path to project directory to scan', '.')
-             ->addArgument('output', InputArgument::OPTIONAL, 'Directory to output images files.', 'graph-composer')
+             ->addArgument('output', InputArgument::OPTIONAL, 'Directory to output images files.', 'composer-dependency')
 
              // add output format option. default value MUST NOT be given, because default is to overwrite with output extension
              ->addOption('format', null, InputOption::VALUE_REQUIRED, 'Image format (svg, png, jpeg)', 'svg')
@@ -54,19 +54,19 @@ class MultiExport extends Command
             'no-root-dev-dep' => $input->hasOption('no-root-dev-dep'),
         ];
 
-        $graph = new DependencyGraph();
-        $dgc = DependencyGraphConfigurator($input->getArgument('dir'), new PackageFilter($filterConfig), new DependencyAnalyzer);
+        $graph = new GraphComposer();
+        $dgc = GraphComposerConfigurator($input->getArgument('dir'), new PackageFilter($filterConfig), new DependencyAnalyzer);
         $dgc->configure($graph);
 
         $target = $input->getArgument('output');
         if ($target !== null) {
             if (is_dir($target)) {
-                throw new RuntimeException(sprintf('You must specify a directory. "%s" given.', $target));
+                throw new \RuntimeException(sprintf('You must specify a directory. "%s" given.', $target));
             }
         } else {
-            $target = rtrim($target, '/') . '/graph-composer/';
+            $target = rtrim($target, '/') . '/composer-dependency/';
         }
-        
+
         $format = $input->getOption('format');
         $graph->setFormat($format);
 

@@ -5,7 +5,6 @@ namespace Kassko\Composer\GraphDependency;
 class PackageFilterOptions
 {
     private $root;
-    private $dev;
 
     public function makeRoot()
     {
