@@ -16,5 +16,5 @@
             "Kassko\\Composer\\GraphDependency\\": "src"
         }
     },
-    "bin": ["bin/composer-dependency"]
+    "bin": ["script/composer-dependency"]
 }
