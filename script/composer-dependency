@@ -10,5 +10,5 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     exit(1);
 }
 
-$app = new Clue\GraphComposer\App();
+$app = new Kassko\Composer\GraphDependency\App();
 $app->run();

@@ -4,15 +4,17 @@ namespace Kassko\Composer\GraphDependency;
 
 class DependencyPackageFilterOptions
 {
-    private $dev;
+    private $dev = false;
 
-    public function makeDev()
+    public function makeDev($dev = true)
     {
         $this->dev = $dev;
+
+        return $this;
     }
 
     public function isDev()
     {
-        return $this->dev();
+        return $this->dev;
     }
 }

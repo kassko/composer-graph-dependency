@@ -4,15 +4,17 @@ namespace Kassko\Composer\GraphDependency;
 
 class PackageFilterOptions
 {
-    private $root;
+    private $root = true;
 
-    public function makeRoot()
+    public function makeRoot($root = true)
     {
         $this->root = $root;
+
+        return $this;
     }
 
     public function isRoot()
     {
-        return $this->root();
+        return $this->root;
     }
 }

@@ -70,7 +70,7 @@ class DependencyAnalyzer
             // on PHP extensions. For these, composer does not create a composer.lock.
             if (isset($rootPackageData['require'])) {
                 foreach ($rootPackageData['require'] as $name => $versionConstraint) {
-                    if ($packageFilter->filterDependency($name, (new PackageFilterOptions())->makeRoot(true), $rootPackageData)) {
+                    if ($packageFilter->filterDependency($name, (new DependencyPackageFilterOptions()), $rootPackageData)) {
                         continue;
                     }
                     $this->connect($graph, $rootPackageData['name'], $name, $versionConstraint);
@@ -79,7 +79,7 @@ class DependencyAnalyzer
 
             if (isset($rootPackageData['require-dev'])) {
                 foreach ($rootPackageData['require-dev'] as $name => $versionConstraint) {
-                    if ($packageFilter->filterDependency($name, (new PackageFilterOptions())->makeRoot(true)->makeDev(), $rootPackageData)) {
+                    if ($packageFilter->filterDependency($name, (new DependencyPackageFilterOptions())->makeDev(), $rootPackageData)) {
                         continue;
                     }
                     $this->connect($graph, $rootPackageData['name'], $name, $versionConstraint);
@@ -114,17 +114,17 @@ class DependencyAnalyzer
             }
 
             if (isset($packageData['require'])) {
-                foreach ($packageData['require'] as $name => $version) { 
-                    if ($packageFilter->filterDependency($name, new PackageFilterOptions(), $packageData)) {
+                foreach ($packageData['require'] as $name => $version) {
+                    if ($packageFilter->filterDependency($name, new DependencyPackageFilterOptions(), $packageData)) {
                         continue;
-                    }                   
+                    }
                     $this->connect($graph, $packageData['name'], $name, $version);
                 }
             }
 
             if (isset($packageData['require-dev'])) {
                 foreach ($packageData['require-dev'] as $name => $version) {
-                    if ($packageFilter->filterDependency($name, (new PackageFilterOptions())->makeDev(), $packageData)) {
+                    if ($packageFilter->filterDependency($name, (new DependencyPackageFilterOptions())->makeDev(), $packageData)) {
                         continue;
                     }
                     $this->connect($graph, $packageData['name'], $name, $version);
@@ -138,7 +138,8 @@ class DependencyAnalyzer
     protected function addPackages(DependencyGraph $graph, array $packages, $vendorDir)
     {
         foreach ($packages as $packageData) {
-            if ($graph->isRootPackageName($packageData['name']) || $graph->hasPackage($packageData['name'])) {
+            /** Upgrade to 1.0.1 to be able to use isRootPackageName() */
+            if (/*$graph->isRootPackageName($packageData['name']) ||*/ $graph->hasPackage($packageData['name'])) {
                 continue;
             }
 

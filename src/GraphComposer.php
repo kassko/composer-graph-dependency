@@ -6,6 +6,7 @@ use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Attribute\AttributeAware;
 use Fhaculty\Graph\Attribute\AttributeBagNamespaced;
 use Graphp\GraphViz\GraphViz;
+use JMS\Composer\Graph\DependencyGraph;
 
 class GraphComposer
 {
@@ -49,7 +50,7 @@ class GraphComposer
         $this->graphviz = $graphviz;
     }
 
-    public function setDependencyGraph(array $dependencyGraph)
+    public function setDependencyGraph(DependencyGraph $dependencyGraph)
     {
         $this->dependencyGraph = $dependencyGraph;
     }
@@ -84,7 +85,7 @@ class GraphComposer
                 $this->populateGraph($graphes[$packageFullName], $package);
             }
 
-            list($vendorName, $packageName) = explode('/', $packageFullName, 2);
+            list($vendorName, $packageName) = Utils::extractPackageNameParts($packageFullName);
             if (in_array($vendorName, $graphes)) {
                 if(!isset($graphes[$vendorName])) {
                     $graphes[$vendorName] = new Graph;
@@ -99,6 +100,7 @@ class GraphComposer
     protected function populateGraph(Graph $graph, $package)
     {
         $name = $package->getName();
+
         $start = $graph->createVertex($name, true);
 
         $label = $name;
@@ -122,8 +124,8 @@ class GraphComposer
             }
         }
 
-        $root = $graph->getVertex($this->dependencyGraph->getRootPackage()->getName());
-        $this->setLayout($root, $this->layoutVertexRoot);
+        //$root = $graph->getVertex($this->dependencyGraph->getRootPackage()->getName());
+        $this->setLayout($start, $this->layoutVertexRoot);
     }
 
     public function displayGraph()

@@ -3,7 +3,7 @@
 namespace Kassko\Composer\GraphDependency;
 
 use Kassko\Composer\GraphDependency\Command;
-use Symfony\Component\Application as BaseApp;
+use Symfony\Component\Console\Application as BaseApp;
 
 class App extends BaseApp
 {

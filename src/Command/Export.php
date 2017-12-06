@@ -4,6 +4,7 @@ namespace Kassko\Composer\GraphDependency\Command;
 
 use Kassko\Composer\GraphDependency\GraphComposer;
 use Kassko\Composer\GraphDependency\GraphComposerConfigurator;
+use Kassko\Composer\GraphDependency\Utils;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,33 +23,44 @@ class Export extends Command
              // add output format option. default value MUST NOT be given, because default is to overwrite with output extension
              ->addOption('format', null, InputOption::VALUE_REQUIRED, 'Image format (svg, png, jpeg)')
 
-             ->addOption('packages', null, InputOption::VALUE_REQUIRED, 'Packages to display in the graph: "vendor-name/package-name"', [])
-             ->addOption('no-packages', null, InputOption::VALUE_REQUIRED, 'Packages not to display in the graph: "vendor-name/package-name"', [])
+             ->addOption('packages', null, InputOption::VALUE_REQUIRED, 'Packages to display in the graph: "vendor-name/package-name"', '')
+             ->addOption('no-packages', null, InputOption::VALUE_REQUIRED, 'Packages not to display in the graph: "vendor-name/package-name"', '')
 
-             ->addOption('vendors', null, InputOption::VALUE_REQUIRED, 'Vendor packages to display in the graph: "vendor-name"', [])
-             ->addOption('no-vendors', null, InputOption::VALUE_REQUIRED, 'Vendor packages not to display in the graph: "vendor-name"', [])
+             ->addOption('vendors', null, InputOption::VALUE_REQUIRED, 'Vendor packages to display in the graph: "vendor-name"', '')
+             ->addOption('no-vendors', null, InputOption::VALUE_REQUIRED, 'Vendor packages not to display in the graph: "vendor-name"', '')
 
-             ->addOption('dep-packages', null, InputOption::VALUE_REQUIRED, 'Dependency packages to display in the graph: "vendor-name/package-name"', [])
-             ->addOption('no-dep-packages', null, InputOption::VALUE_REQUIRED, 'Dependency packages not to display in the graph: "vendor-name/package-name"', [])
+             ->addOption('dep-packages', null, InputOption::VALUE_REQUIRED, 'Dependency packages to display in the graph: "vendor-name/package-name"', '')
+             ->addOption('no-dep-packages', null, InputOption::VALUE_REQUIRED, 'Dependency packages not to display in the graph: "vendor-name/package-name"', '')
 
-             ->addOption('dep-vendors', null, InputOption::VALUE_REQUIRED, 'Dependency vendor packages to display in the graph: "vendor-name"', [])
-             ->addOption('no-dep-vendors', null, InputOption::VALUE_REQUIRED, 'Dependency vendor packages not to display in the graph: "vendor-name"', [])
+             ->addOption('dep-vendors', null, InputOption::VALUE_REQUIRED, 'Dependency vendor packages to display in the graph: "vendor-name"', '')
+             ->addOption('no-dep-vendors', null, InputOption::VALUE_REQUIRED, 'Dependency vendor packages not to display in the graph: "vendor-name"', '')
 
-             ->addOption('no-root-dev-dep', null, InputOption::VALUE_NONE, 'Whether root package require-dev dependencies should be shown');
+             ->addOption('include-tags', null, InputOption::VALUE_REQUIRED, '', '')
+             ->addOption('exclude-tags', null, InputOption::VALUE_REQUIRED, '', '')
+
+             ->addOption('no-root-dev-dep', null, InputOption::VALUE_NONE, 'Whether root package require-dev dependencies should be shown')
+
+             ->addOption('default-filtering-mode', null, InputOption::VALUE_REQUIRED, '', 'includes_all')
+             ->addOption('default-dependency-filtering-mode', null, InputOption::VALUE_REQUIRED, '', 'includes_all');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filterConfig = [
-            'include-packages' => $input->getArgument('packages'),
-            'exclude_packages' => $input->getArgument('no-packages'),
-            'include-vendors' => $input->getArgument('vendors'),
-            'exclude-vendors' => $input->getArgument('no-vendors'),
-            'include-dep-packages' => $input->getArgument('dep-packages'),
-            'exclude-dep-packages' => $input->getArgument('no-dep-packages'),
-            'include-dep-vendors' => $input->getArgument('dep-vendors'),
-            'exclude-dep-vendors' => $input->getArgument('no-dep-vendors'),
-            'no-root-dev-dep' => $input->hasOption('no-root-dev-dep'),
+            'include_packages' => Utils::getOptionAsArray($input->getOption('packages')),
+            'exclude_packages' => Utils::getOptionAsArray($input->getOption('no-packages')),
+            'include_vendors' => Utils::getOptionAsArray($input->getOption('vendors')),
+            'exclude_vendors' => Utils::getOptionAsArray($input->getOption('no-vendors')),
+            'include_dep_packages' => Utils::getOptionAsArray($input->getOption('dep-packages')),
+            'exclude_dep_packages' => Utils::getOptionAsArray($input->getOption('no-dep-packages')),
+            'include_dep_vendors' => Utils::getOptionAsArray($input->getOption('dep-vendors')),
+            'exclude_dep_vendors' => Utils::getOptionAsArray($input->getOption('no-dep-vendors')),
+            'include_tags' => Utils::getOptionAsArray($input->getOption('include-tags')),
+            'exclude_tags' => Utils::getOptionAsArray($input->getOption('exclude-tags')),
+
+            'no_root_dev_dep' => $input->hasOption('no-root-dev-dep'),
+            'default_filtering_mode' => $input->getOption('default-filtering-mode'),
+            'default_dependency_filtering_mode' => $input->getOption('default-dependency-filtering-mode'),
         ];
 
         $graph = new GraphComposer();

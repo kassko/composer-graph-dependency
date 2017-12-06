@@ -2,6 +2,8 @@
 
 namespace Kassko\Composer\GraphDependency;
 
+use Kassko\Composer\GraphDependency\Utils;
+
 class PackageFilter
 {
     private $filterConfig;
@@ -38,63 +40,60 @@ class PackageFilter
         }
 
         if ('includes_all' === $this->filterConfig['default_filtering_mode']) {
-            if (in_array($packageFullName, $this->filterConfig['exclude_packages']) {
+            if (in_array($packageFullName, $this->filterConfig['exclude_packages'])) {
                 return true;
             }
-            
+
             list($vendorName, $packageName) = explode('/', $packageFullName, 2);
-            
-            if (in_array($vendorName, $this->filterConfig['exclude_vendors']) {
+
+            if (in_array($vendorName, $this->filterConfig['exclude_vendors'])) {
                 return true;
-            }    
+            }
 
             return false;
-        } 
+        }
 
         /** elseif ('excludes_all' === $this->filterConfig['default_filtering_mode']) */
 
-        if (in_array($packageFullName, $this->filterConfig['include_packages']) {
+        if (in_array($packageFullName, $this->filterConfig['include_packages'])) {
             return false;
         }
 
         list($vendorName, $packageName) = explode('/', $packageFullName, 2);
-
-        if (in_array($vendorName, $this->filterConfig['include_vendors']) {
+        if (in_array($vendorName, $this->filterConfig['include_vendors'])) {
             return false;
         }
 
         return true;
     }
 
-    protected function filterDependency($packageFullName, DependencyPackageFilterOptions $packageFilterOptions, array $parentPackageData)
+    public function filterDependency($packageFullName, DependencyPackageFilterOptions $packageFilterOptions, array $parentPackageData)
     {
-        if ($this->filterConfig['no-root-dev-dep'] && $packageFilterOptions->isDev()) {
+        if ($this->filterConfig['no_root_dev_dep'] && $packageFilterOptions->isDev()) {
             return true;
         }
 
-        if ('includes_all' === $this->filterConfig['default_dependency_filtering_mode']) {
-            if (in_array($packageFullName, $this->filterConfig['exclude_dependency_packages']) {
+        if ('includes_all' === $this->filterConfig['default_dep_filtering_mode']) {
+            if (in_array($packageFullName, $this->filterConfig['exclude_dep_packages'])) {
                 return true;
             }
-            
-            list($vendorName, $packageName) = explode('/', $packageFullName, 2);
-            
-            if (in_array($vendorName, $this->filterConfig['exclude_dependency_vendors']) {
+
+            list($vendorName, $packageName) = Utils::extractPackageNameParts($packageFullName);
+            if (in_array($vendorName, $this->filterConfig['exclude_dep_vendors'])) {
                 return true;
-            }    
+            }
 
-            return false;
-        } 
-
-        /** elseif ('excludes_all' === $this->filterConfig['default_dependency_filtering_mode']) */
-
-        if (in_array($packageFullName, $this->filterConfig['include_dependency_packages']) {
             return false;
         }
 
-        list($vendorName, $packageName) = explode('/', $packageFullName, 2);
+        /** elseif ('excludes_all' === $this->filterConfig['default_dep_filtering_mode']) */
 
-        if (in_array($vendorName, $this->filterConfig['include_dependency_vendors']) {
+        if (in_array($packageFullName, $this->filterConfig['include_dep_packages'])) {
+            return false;
+        }
+
+        list($vendorName, $packageName) = Utils::extractPackageNameParts($packageFullName);
+        if (in_array($vendorName, $this->filterConfig['include_dep_vendors'])) {
             return false;
         }
 
