@@ -28,20 +28,17 @@ class MultiExport extends Command
              ->addOption('packages', null, InputOption::VALUE_REQUIRED, 'Packages to display in the graph: "vendor-name/package-name"', '')
              ->addOption('no-packages', null, InputOption::VALUE_REQUIRED, 'Packages not to display in the graph: "vendor-name/package-name"', '')
 
-             ->addOption('vendors', null, InputOption::VALUE_REQUIRED, 'Vendor packages to display in the graph: "vendor-name"', '')
-             ->addOption('no-vendors', null, InputOption::VALUE_REQUIRED, 'Vendor packages not to display in the graph: "vendor-name"', '')
-
              ->addOption('dep-packages', null, InputOption::VALUE_REQUIRED, 'Dependency packages to display in the graph: "vendor-name/package-name"', '')
              ->addOption('no-dep-packages', null, InputOption::VALUE_REQUIRED, 'Dependency packages not to display in the graph: "vendor-name/package-name"', '')
 
-             ->addOption('dep-vendors', null, InputOption::VALUE_REQUIRED, 'Dependency vendor packages to display in the graph: "vendor-name"', '')
-             ->addOption('no-dep-vendors', null, InputOption::VALUE_REQUIRED, 'Dependency vendor packages not to display in the graph: "vendor-name"', '')
-
-             ->addOption('include-tags', null, InputOption::VALUE_REQUIRED, '', '')
-             ->addOption('exclude-tags', null, InputOption::VALUE_REQUIRED, '', '')
+             ->addOption('tags', null, InputOption::VALUE_REQUIRED, '', '')
+             ->addOption('no-tags', null, InputOption::VALUE_REQUIRED, '', '')
+             ->addOption('dep-tags', null, InputOption::VALUE_REQUIRED, '', '')
+             ->addOption('dep-no-tags', null, InputOption::VALUE_REQUIRED, '', '')
 
              ->addOption('separate-graph-packages', null, InputOption::VALUE_REQUIRED, 'Packages for which to create a separate graph', '')
              ->addOption('separate-graph-vendors', null, InputOption::VALUE_REQUIRED, 'Vendors for which to create a separate graph', '')
+             ->addOption('separate-graph-vendors-packages', null, InputOption::VALUE_REQUIRED, 'Vendors for which to create a separate graph', '')
 
              ->addOption('no-root-dev-dep', null, InputOption::VALUE_NONE, 'Whether root package require-dev dependencies should be shown')
 
@@ -52,18 +49,17 @@ class MultiExport extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filterConfig = [
-            'include_packages' => Utils::getOptionAsArray($input->getOption('packages')),
-            'exclude_packages' => Utils::getOptionAsArray($input->getOption('no-packages')),
-            'include_vendors' => Utils::getOptionAsArray($input->getOption('vendors')),
-            'exclude_vendors' => Utils::getOptionAsArray($input->getOption('no-vendors')),
-            'include_dep_packages' => Utils::getOptionAsArray($input->getOption('dep-packages')),
-            'exclude_dep_packages' => Utils::getOptionAsArray($input->getOption('no-dep-packages')),
-            'include_dep_vendors' => Utils::getOptionAsArray($input->getOption('dep-vendors')),
-            'exclude_dep_vendors' => Utils::getOptionAsArray($input->getOption('no-dep-vendors')),
-            'include_tags' => Utils::getOptionAsArray($input->getOption('include-tags')),
-            'exclude_tags' => Utils::getOptionAsArray($input->getOption('exclude-tags')),
+            'packages' => Utils::getOptionAsArray($input->getOption('packages')),
+            'no_packages' => Utils::getOptionAsArray($input->getOption('no-packages')),
+            'dep_packages' => Utils::getOptionAsArray($input->getOption('dep-packages')),
+            'no_dep_packages' => Utils::getOptionAsArray($input->getOption('no-dep-packages')),
+            'tags' => Utils::getOptionAsArray($input->getOption('tags')),
+            'no-tags' => Utils::getOptionAsArray($input->getOption('no-tags')),
+            'dep-tags' => Utils::getOptionAsArray($input->getOption('dep-tags')),
+            'no-dep-tags' => Utils::getOptionAsArray($input->getOption('no-dep-tags')),
             'separate_graph_packages' => Utils::getOptionAsArray($input->getOption('separate-graph-packages')),
             'separate_graph_vendors' => Utils::getOptionAsArray($input->getOption('separate-graph-vendors')),
+            'separate_graph_vendors_packages' => Utils::getOptionAsArray($input->getOption('separate-graph-vendors-packages')),
 
             'no_root_dev_dep' => $input->hasOption('no-root-dev-dep'),
             'default_filtering_mode' => $input->getOption('default-filtering-mode'),
@@ -76,22 +72,39 @@ class MultiExport extends Command
 
         $target = realpath('.') . '/' . $input->getArgument('output');
         if ($target !== null) {
-            if (!is_dir($target)) {
-                throw new \RuntimeException(sprintf('You must specify a directory. "%s" given.', $target));
-            }
         } else {
             $target = rtrim($target, '/') . '/composer-dependency/';
+        }
+
+        if (!is_dir($target)) {
+            mkdir($target, 0777, true);
+            //throw new \RuntimeException(sprintf('You must specify a directory. "%s" given.', $target));
         }
 
         $format = $input->getOption('format');
         $graph->setFormat($format);
 
-        if ($input->hasOption('separate-graph-packages') || $input->hasOption('separate-graph-vendors')) {
-            $pathes = $graph->getImagesPathes($filterConfig['separate_graph_packages'], $filterConfig['separate_graph_vendors']);
+        if (
+            $input->hasOption('separate-graph-packages')
+            || $input->hasOption('separate-graph-vendors')
+            || $input->hasOption('separate-graph-vendors-packages')
+        ) {
+            $pathes = $graph->getImagesPathes(
+                $filterConfig['separate_graph_packages'],
+                $filterConfig['separate_graph_vendors'],
+                $filterConfig['separate_graph_vendors_packages']
+            );
 
             foreach ($pathes as $graphName => $graphPath) {
                 $graphName = str_replace('/', '-', $graphName);
-                rename($graphPath, sprintf('%s/%s.%s', $target, $graphName, $format));
+
+                $src = $graphPath;
+                $dest = sprintf('%s/%s.%s', $target, $graphName, $format);
+
+                /*$src = substr($src, 1);
+                $dest = substr($dest, 1);*/
+
+                rename($src, $dest);
             }
         }
     }

@@ -85,7 +85,7 @@ Export to a file composer-dependency.jpeg in jpeg format.
 ### Create a graph with package having in composer.json "extra" key a tag "type" with the value "business". Concretely, this mean you create a graph with only your business packages.
 
 ```bash
-./vendor/bin/composer-dependency --tags-pathes="type" --tags-values="business" export
+./vendor/bin/composer-dependency --tags="type business" export
 ```
 
 ### Create a graph with package having in composer.json "extra" key
@@ -96,7 +96,7 @@ Concretely, this mean you create a graph with only your business and data-mining
 
 ```bash
 ./vendor/bin/composer-dependency
---tags-pathes="type type" --tags-values="business data-mining" export
+--tags="type business type data-mining" export
 ```
 
 ### Create a graph without package having in composer.json "extra" key
@@ -106,7 +106,7 @@ Concretely, this mean you create a graph with only your business and data-mining
 
 ```bash
 ./vendor/bin/composer-dependency
---no-tags-pathes="type source_code source_code" --no-tags-values="bridge python ruby"
+--no-tags="type bridge source_code python source_code ruby"
 ```
 
 A composer extra could look like below:
@@ -123,7 +123,7 @@ Tags can be "deep".
 
 ```bash
 ./vendor/bin/composer-dependency
---tags-pathes="tag.type tag.type" --tags-values="business data-mining" export
+--tags="tag.type business tag.type data-mining" export
 ```
 
 A corresponding composer extra could look like below:
@@ -170,12 +170,17 @@ Available formats are:
 ./vendor/bin/composer-dependency --separate-graph-vendors="vendorA vendorB" --format="png" multi-export
 ```
 
+### Create several graphes to a directory named `composer-dependency` in png format, one for each package of each vendors indicated.
+```bash
+./vendor/bin/composer-dependency --separate-graph-vendors-packages="vendorA vendorB" --format="png" multi-export
+```
+
 ### Combine with filters
 ```bash
 ./vendor/bin/composer-dependency --no-packages="vendorA/packageB" --separate-graph-vendors="vendorA vendorB" --format="png" multi-export
 ```
 
-Note that some combinations have no sense. For the moment, there is no control of the consistency of the combinations. It's to you to be carefull. This will be fixed later.
+Note that some combinations have no sense. For the moment, there is no control of the consistency of a combinations. It's to you to be carefull. This will be fixed later.
 
 ## Relies heavily on:
 * [clue/composer-dependency](https://github.com/clue/composer-dependency)

@@ -24,16 +24,30 @@ class PackageFilter
                 return true;
             }
 
-            foreach ($this->filterConfig['include_tags'] as $tagConfig) {
-                if ($this->valueExistsInPath($tagConfig['path'], $tagConfig['value'], $packageData['extra'])) {
+            $nb = count($this->filterConfig['include_tags']);
+            for ($i = 0; $i < $nb; $i+=2) {
+                if (
+                    $this->valueExistsInPath(
+                        $this->filterConfig['include_tags'][$i],
+                        $this->filterConfig['include_tags'][$i+1],
+                        $packageData['extra']
+                    )
+                ) {
                     return false;
                 }
             }
         }
 
         if (count($this->filterConfig['exclude_tags']) && isset($packageData['extra'])) {
-            foreach ($this->filterConfig['exclude_tags'] as $tagConfig) {
-                if ($this->valueExistsInPath($tagConfig['path'], $tagConfig['value'], $packageData['extra'])) {
+            $nb = count($this->filterConfig['exclude_tags']);
+            for ($i = 0; $i < $nb; $i+=2) {
+                if (
+                    $this->valueExistsInPath(
+                        $this->filterConfig['exclude_tags'][$i],
+                        $this->filterConfig['exclude_tags'][$i+1],
+                        $packageData['include_tags']['extra']
+                    )
+                ) {
                     return true;
                 }
             }
@@ -73,31 +87,32 @@ class PackageFilter
             return true;
         }
 
-        if ('includes_all' === $this->filterConfig['default_dep_filtering_mode']) {
-            if (in_array($packageFullName, $this->filterConfig['exclude_dep_packages'])) {
-                return true;
-            }
-
-            list($vendorName, $packageName) = Utils::extractPackageNameParts($packageFullName);
-            if (in_array($vendorName, $this->filterConfig['exclude_dep_vendors'])) {
-                return true;
-            }
-
-            return false;
-        }
-
-        /** elseif ('excludes_all' === $this->filterConfig['default_dep_filtering_mode']) */
-
-        if (in_array($packageFullName, $this->filterConfig['include_dep_packages'])) {
-            return false;
-        }
-
         list($vendorName, $packageName) = Utils::extractPackageNameParts($packageFullName);
-        if (in_array($vendorName, $this->filterConfig['include_dep_vendors'])) {
-            return false;
+
+        if (count($this->filterConfig['exclude_dep_packages'])
+            && in_array($packageFullName, $this->filterConfig['exclude_dep_packages'])) {
+            return true;
         }
 
-        return true;
+        if (count($this->filterConfig['include_dep_packages'])
+            && !in_array($packageFullName, $this->filterConfig['include_dep_packages'])) {
+
+            return true;
+        }
+
+        if (count($this->filterConfig['exclude_dep_vendors'])
+            && in_array($vendorName, $this->filterConfig['exclude_dep_vendors'])
+        ) {
+            return true;
+        }
+
+        if (count($this->filterConfig['include_dep_vendors'])
+            && !in_array($vendorName, $this->filterConfig['include_dep_vendors'])) {
+
+            return true;
+        }
+
+        return false;
     }
 
     protected function valueExistsInPath($path, $value, array $config)

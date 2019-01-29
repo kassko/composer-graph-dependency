@@ -47,16 +47,16 @@ class Export extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filterConfig = [
-            'include_packages' => Utils::getOptionAsArray($input->getOption('packages')),
-            'exclude_packages' => Utils::getOptionAsArray($input->getOption('no-packages')),
+            'packages' => Utils::getOptionAsArray($input->getOption('packages')),
+            'no_packages' => Utils::getOptionAsArray($input->getOption('no-packages')),
             'include_vendors' => Utils::getOptionAsArray($input->getOption('vendors')),
             'exclude_vendors' => Utils::getOptionAsArray($input->getOption('no-vendors')),
-            'include_dep_packages' => Utils::getOptionAsArray($input->getOption('dep-packages')),
-            'exclude_dep_packages' => Utils::getOptionAsArray($input->getOption('no-dep-packages')),
+            'dep_packages' => Utils::getOptionAsArray($input->getOption('dep-packages')),
+            'no_dep_packages' => Utils::getOptionAsArray($input->getOption('no-dep-packages')),
             'include_dep_vendors' => Utils::getOptionAsArray($input->getOption('dep-vendors')),
             'exclude_dep_vendors' => Utils::getOptionAsArray($input->getOption('no-dep-vendors')),
-            'include_tags' => Utils::getOptionAsArray($input->getOption('include-tags')),
-            'exclude_tags' => Utils::getOptionAsArray($input->getOption('exclude-tags')),
+            'tags' => Utils::getOptionAsArray($input->getOption('include-tags')),
+            'no-tags' => Utils::getOptionAsArray($input->getOption('exclude-tags')),
 
             'no_root_dev_dep' => $input->hasOption('no-root-dev-dep'),
             'default_filtering_mode' => $input->getOption('default-filtering-mode'),
