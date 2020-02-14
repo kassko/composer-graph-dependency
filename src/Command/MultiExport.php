@@ -17,7 +17,7 @@ class MultiExport extends Command
 {
     protected function configure()
     {
-        $this->setName('export')
+        $this->setName('multi_export')
              ->setDescription('Export dependency graph images for given project directory and given packages or vendors')
              ->addArgument('root-dir', InputArgument::OPTIONAL, 'Path to project directory to scan', realpath('.'))
              ->addArgument('output', InputArgument::OPTIONAL, 'Directory to output images files.', './composer-dependency')
