@@ -64,7 +64,7 @@ class Export extends Command
         ];
 
         $graph = new GraphComposer();
-        $dgc = GraphComposerConfigurator($input->getArgument('dir'), new PackageFilter($filterConfig), new DependencyAnalyzer);
+        $dgc = new GraphComposerConfigurator($input->getArgument('dir'), new PackageFilter($filterConfig), new DependencyAnalyzer);
         $dgc->configure($graph);
 
         $target = $input->getArgument('output');
